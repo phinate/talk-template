@@ -1,58 +1,138 @@
 class: middle, center, title-slide
 count: false
 
-# Template
+# TRT 'Manual' Data Calibration: Status
 
-A Turing machine example
+TRT days | 19/02/2020
 
 <br><br>
 
-Gilles Louppe<br>
-[g.louppe@uliege.be](mailto:g.louppe@uliege.be)
+Nathan Simpson<br>
+[n.s@cern.ch](mailto:n.s@cern.ch)
 
 ---
 
 class: middle
 
-# Turing machines
+# What's new?
 
 ---
 
 class: middle
 
-.center.circle[![](figures/turing.jpg)]
-
-A **Turing machine** is a mathematical *model of computation* that defines an abstract machine, which manipulates symbols on a strip of tape according to a table of rules.
-
-Despite the model's simplicity, given any computer algorithm, a Turing machine capable of simulating that algorithm's logic can be constructed.
+# What's new? It works! (mostly)
 
 ---
+class: middle
 
+# Comparison: Old vs New
+
+- Framework was validated against [this manual calibration](https://atlas-trt-web-dev.cern.ch/php/index.php?do=Pool.Calibration.define&Run=357713) for run 357713 data (`data18_13TeV`)
+- Ran on a subset (~30%) of the data, cloned by rucio rule
+- Same Athena release (21.0.66)
+- Started with **different calibration constants**
+  - The previous calibration used correct database constants for run 357713
+  - These don't exist (at least where they were), so I used `dbconst.364485.txt`
+  - Should still converge after 3 iterations
+
+---
 class: middle, center
 
-.width-100[![](figures/tm.jpg)]
+# Residuals: Old
+
+.center.width-50[![](figures/oldres.png)]
 
 ---
+class: middle, center
 
-# Formation definition
+# Residuals: New
 
-Following Hopcroft and Ullman (1979, p. 148), a (one-tape) Turing machine can be formally defined as a 7-tuple $M=(Q,\Gamma,b,\Sigma,\delta, q\_0, F)$, where
-- $Q$ is a finite, non-empty set of states;
-- $\Gamma$ is a finite, non-empty set of tapes alphabet symbols;
-- $b \in \Gamma \setminus \\{b\\}$ is the set of input symbols, that is, the set of symbols allowed to appear in the initial tape contents;
-- $q\_0 \in Q$ is the initial state;
-- $F \subseteq Q$ is the set of final states or accepting states. The initial tape contents is said to be accepted by $M$ if it eventually halts in a state from $F$.
-- $\delta: (Q \setminus F) \times \Gamma \rightarrow Q \times \Gamma \times \\{L,R\\}$ is the state transition function.
+.center.width-50[![](figures/newres.png)]
+
+---
+class: middle, center
+
+# Board $T_0$s: Old
+
+.center.width-80[![](figures/boardt0sold.png)]
+
+---
+class: middle, center
+
+# Board $T_0$s: New
+
+.center.width-80[![](figures/boardt0new.png)]
+Started out with wrong calib. constants, but still looks very similar!
 
 ---
 
 class: middle
 
-## Sub-title
+# Timing
+This took 56.5h to perform 3 iterations, including 'idle' time.
+- 'Idle' == time jobs spend waiting to be assigned to a node
+- Couldn't find this in Condor output metrics
 
-Lorem ipsum.
+The f/w as it stands is able to output job file size
+- The bigger the RAW file, the more jobs are produced
+- $Pr(waiting)$ increases...
 
-.footnote[This is a footnote.]
+As previously discussed, a way to reduce this idle time is to specify the HTCondor `JobFlavour` ahead of time. This study used a conservative 24h flavour, but this can definitely be changed since 1 iteration takes ~16h.
+
+Will investigate!
+
+---
+class: middle
+
+# Other additions to the manual f/w
+
+The software now
+- Can be run on both individual files and folders of multiple files
+- Has tested, working instructions [on GitLab](https://gitlab.cern.ch/nsimpson/trtdatacalibration/tree/HTCondor)
+- Is being documented more thoroughly at the level of the configuration file
+
+An internal note is also in the works detailing the setup!
+
+---
+
+class: middle
+
+# Small issues
+
+Outstanding issues:
+- Straw status plots are produced, but summary pdf is corrupted, unsure why
+- Haven't tested with rel. 22
+- Automated status emails no longer work, as the code was designed to parse log files from.
+  - Will write a light python module to re-do this using Condor log files
+- Unclear whether Tier-0 code will target HTCondor as the batch system?
+
+---
+
+class: middle
+
+# Data/MC Interoperability
+
+The software should run interchangeably on *data* or **MC**
+  - Right now, we have three separate setups: *data* (manual), *data* (Tier-0), **MC**
+  - Key idea: One piece of actual calibration code, multiple steering setups and/or job options for the three different use cases
+  - How possible is this?
+    - How do the Athena job options differ?
+
+---
+class: middle
+
+# Data/MC Interoperability
+
+Job options for **MC** are practically identical to the *RAW --> ntuple* step in *data* calibration.
+
+But, the calibration steps in *data* differ:
+  - Uses `TRTCalibrator` object, which seems to enable calibration for different sub-detector layers, and at different levels (straw, board, etc)
+  - Not fully understood (at least for me)
+
+Previous studies were performed that showed the **MC framework** runs on both *data* and **MC** ntuples with small differences in the residuals.
+
+Possibly found steps to allow data calibration to run on RDO -- **see Eleni's talk for more info!**
+
 
 ---
 
@@ -60,23 +140,14 @@ class: middle
 
 # Summary
 
----
-
-class: middle
-
-- abc
-- def
-- ghi
-
----
-
-# References
-
-- Turing, Alan M. "Computing machinery and intelligence." Parsing the Turing Test. Springer, Dordrecht, 2009. 23-65.
+- Manual calibration works
+  - Small improvements to make to finish development & documentation
+- Need status of Tier-0 code -- modify or leave?
+- Data/MC frameworks can be harmonized, but not sure which setup is preferable
 
 ---
 
 class: end-slide, center
 count: false
 
-The end.
+The end :)

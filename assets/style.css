@@ -17,14 +17,14 @@ body {
 
 .remark-slide-content {
     font-size: 1.4em;
-    border-top: solid 5px #20707e;
+    border-top: solid 5px #17becf;
 }
 
 .remark-slide-content h1 {
     font-weight: bold;
     font-size: 2.25em;
     margin: 0 0 .5em 0;
-    color: #17525d;
+    color: #17becf;
 }
 
 .remark-slide-content h2 {
@@ -94,7 +94,7 @@ strong {
 }
 
 .katex {
-    color: #1a7082;
+    color: #14a9b8;
 }
 
 .black-slide  .katex {
@@ -390,10 +390,10 @@ td {
 
 .title-slide:after {
     content: '';
-    background: url("../assets/logo_ulg.png") no-repeat;
+    background: url("../assets/logos_pres.png") no-repeat;
     background-size: 100% 100%;
-    width: 150px;
-    height: 73px;
+    width: 497px;
+    height:100px;
     position: absolute;
     bottom: 2em;
     left: 3.3em;
@@ -405,7 +405,7 @@ td {
 }
 
 .end-slide {
-    background-color: #20707e;
+    background-color: #1294a1;
     color: white;
     vertical-align: middle;
 }
